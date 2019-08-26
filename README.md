@@ -16,7 +16,7 @@ More are being worked on.
    ```yaml
    dependencies:
      summarizer:
-       github: your-github-user/summarizer
+       github: cadmiumrc/summarizer
    ```
 
 2. Run `shards install`

@@ -15,7 +15,7 @@ More are being worked on.
 
    ```yaml
    dependencies:
-     summarizer:
+     cadmium_summarizer:
        github: cadmiumrc/summarizer
    ```
 
@@ -24,7 +24,7 @@ More are being worked on.
 ## Usage
 
 ```crystal
-require "summarizer"
+require "cadmium_summarizer"
 
 SumBasicSummarizer.new.summarize(long_text)
 ```

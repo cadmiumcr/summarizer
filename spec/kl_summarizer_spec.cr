@@ -6,8 +6,8 @@ summary_length = {
   0 => "",
 }
 
-describe Cadmium::Summarizer::SumBasicSummarizer do
-  subject = Cadmium::Summarizer::SumBasicSummarizer.new
+describe Cadmium::Summarizer::KLSummarizer do
+  subject = Cadmium::Summarizer::KLSummarizer.new
 
   it "should summarize a long text to default number (5) sentences" do
     subject.summarize(hume_text).should eq(summary_length[5])
@@ -22,6 +22,6 @@ describe Cadmium::Summarizer::SumBasicSummarizer do
   end
 
   it "should summarize text via String#summarize" do
-    hume_text.summarize(Cadmium::Summarizer::SumBasicSummarizer).should eq(summary_length[5])
+    hume_text.summarize(Cadmium::Summarizer::KLSummarizer).should eq(summary_length[5])
   end
 end

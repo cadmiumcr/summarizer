@@ -1,3 +1,5 @@
+require "./summarizer"
+
 module Cadmium
   module Summarizer
     # SumBasic (Nenkova and Vanderwende, 2005) is a system that produces generic multi-document summaries.
@@ -8,7 +10,7 @@ module Cadmium
     # Step 4 : For each term in the sentence chosen at step 3, update their probability (probability²)
     # Step 5 : If the desired summary length has not been reached, go back to Step 2
     # Reference : http://www.cis.upenn.edu/~nenkova/papers/ipm.pdf
-    class SumBasicSummarizer < Summarizer
+    class SumBasicSummarizer < AbstractSummarizer
       private def average_probability_of_words(normalized_terms_ratio : Hash(String, Float64), sentence : String) : Float64
         significant_terms_in_sentence = significant_terms(sentence)
         number_of_terms_in_sentence = significant_terms_in_sentence.size

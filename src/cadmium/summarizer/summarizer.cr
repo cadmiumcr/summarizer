@@ -7,7 +7,7 @@ module Cadmium
       abstract def select_sentences(text : String, max_num_sentences : Int32, normalized_terms_ratio : Hash(String, Float64)) : Array(String)
 
       def all_terms(text : String) : Array(String)
-        text.tokenize
+        text.tokenize_and_stem(PorterStemmer, true)
       end
 
       def significant_terms(text : String) : Array(String)

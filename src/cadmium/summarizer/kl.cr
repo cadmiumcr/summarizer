@@ -16,20 +16,20 @@ module Cadmium
     # Source: http://www.aclweb.org/anthology/N09-1041
     class KL < AbstractSummarizer
       private def joint_frequency(terms_in_sentence : Array(String), terms_in_summary : Array(String)) : Hash(String, Float64)
-        # Commented out for debugging the painfully slow code.
-        #
-        # total_number_of_terms = terms_in_sentence.size + terms_in_summary.size
-        # terms_frequencies_in_sentence = terms_frequencies(terms_in_sentence).transform_values { |frequency| frequency.to_f }
-        # terms_frequencies_in_summary = terms_frequencies(terms_in_summary).transform_values { |frequency| frequency.to_f }
-        # joint = terms_frequencies_in_sentence
-        # terms_frequencies_in_summary.keys.each do |term|
-        #   joint[term] = joint.keys.includes?(term) ? joint[term] + terms_frequencies_in_summary[term] : terms_frequencies_in_summary[term]
-        # end
-        # joint.keys.each do |term|
-        #   joint[term] /= total_number_of_terms
-        # end
-        # joint
-        normalized_terms_ratio(terms_in_sentence.join(" "), 0, 1)
+        total_number_of_terms = terms_in_sentence.size + terms_in_summary.size
+        terms_frequencies_in_sentence = terms_frequencies(terms_in_sentence).transform_values { |frequency| frequency.to_f }
+        terms_frequencies_in_summary = terms_frequencies(terms_in_summary).transform_values { |frequency| frequency.to_f }
+        joint = terms_frequencies_in_sentence
+
+        terms_frequencies_in_summary.keys.each do |term|
+          joint[term] = joint.keys.includes?(term) ? joint[term] + terms_frequencies_in_summary[term] : terms_frequencies_in_summary[term]
+        end
+
+        joint.keys.each do |term|
+          joint[term] /= total_number_of_terms
+        end
+
+        joint
       end
 
       private def kl_divergence(final_summary_frequencies : Hash(String, Float64), text_normalized_frequencies : Hash(String, Float64)) : Float64
@@ -44,23 +44,29 @@ module Cadmium
         final_summary = Hash(String, Float64).new
         all_sentences_significant_terms = Sentence.sentences(text).each_with_object({} of String => Array(String)) { |sentence, significant_terms| significant_terms[sentence] = significant_terms(sentence) } # Step 1
         terms_frequency = normalized_terms_ratio(text)                                                                                                                                                         # Step 2
-        all_sentences_significant_terms.keys.each do |selected_sentence|                                                                                                                                       # Step 3
+
+        all_sentences_significant_terms.keys.each do |selected_sentence| # Step 3
           summary_as_word_list = Array(String).new
           final_summary.keys.each { |sentence| summary_as_word_list += all_terms(sentence) } # Step 4
           kl_summary = Hash(String, Float64).new
+
           all_sentences_significant_terms.values.each do |significant_terms|
             joint_frequency = joint_frequency(significant_terms, summary_as_word_list)      # Step 5
             kl_summary[selected_sentence] = kl_divergence(joint_frequency, terms_frequency) # Step 6
           end
+
           best_sentence = kl_summary.min_by { |_, kl| kl }.first # Step 7
           all_sentences_significant_terms.reject!(best_sentence)
           final_summary[best_sentence] = -1.0 * final_summary.size # Step 8
         end
+
         selected_sentences = [] of String
         final_summary = final_summary.to_a.sort_by { |_, rating| -rating }.first(max_num_sentences)
+
         final_summary.each do
           selected_sentences << final_summary.first[0]
         end
+
         selected_sentences
       end
     end

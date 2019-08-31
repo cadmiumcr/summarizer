@@ -5,6 +5,7 @@ Inspired from [sumy](https://github.com/miso-belica/sumy), summarizer lets you s
 As of now, the following algorithms are implemented :
 
 - Luhn
+- KL divergence based summarizer
 - SumBasic
 
 More are being worked on.
@@ -26,7 +27,7 @@ More are being worked on.
 ```crystal
 require "cadmium_summarizer"
 
-SumBasicSummarizer.new.summarize(long_text)
+SumBasic.new.summarize(long_text)
 ```
 
 ## Contributing

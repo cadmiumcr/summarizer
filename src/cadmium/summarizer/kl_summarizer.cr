@@ -14,7 +14,7 @@ module Cadmium
     # Step 8 : Rate this sentence (-1 * final_summary.size) and update its rating in the final_summary hash.
 
     # Source: http://www.aclweb.org/anthology/N09-1041
-    class KLSummarizer < AbstractSummarizer
+    class KL < AbstractSummarizer
       private def joint_frequency(terms_in_sentence : Array(String), terms_in_summary : Array(String)) : Hash(String, Float64)
         # Commented out for debugging the painfully slow code.
         #

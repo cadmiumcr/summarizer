@@ -7,7 +7,7 @@ module Cadmium
     # 2 - Calculating each sentence rating ((number of significant terms)² / (greatest distance between two significant terms)).
     # 3 - Sorting sentences according to their weight and returning the first n of them.
     # Reference : https://ieeexplore.ieee.org/document/5392672?arnumber=5392672
-    class LuhnSummarizer < AbstractSummarizer
+    class Luhn < AbstractSummarizer
       private def all_terms(text : String) : Array(String) # Only for Luhn to calculate term distance in sentence
         text.tokenize(WordTokenizer)
       end

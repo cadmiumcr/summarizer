@@ -5,7 +5,7 @@ Inspired from [sumy](https://github.com/miso-belica/sumy), summarizer lets you s
 As of now, the following algorithms are implemented :
 
 - Luhn
-- KL divergence based summarizer
+- KL divergence based summarizer (WIP)
 - SumBasic
 
 More are being worked on.

@@ -4,7 +4,7 @@ module Cadmium
 
     abstract class AbstractSummarizer
       # All extraction-based summarizers must implement the select_sentences method.
-      abstract def select_sentences(text : String, max_num_sentences : Int32, normalized_terms_ratio : Hash(String, Float64)) : Array(String)
+      abstract def select_sentences(text : String, max_num_sentences : Int32) : Array(String)
 
       def all_terms(text : String) : Array(String)
         text.tokenize_and_stem(PorterStemmer, true)
@@ -47,7 +47,7 @@ module Cadmium
         return "" if max_num_sentences <= 0
         normalized_terms_ratio = normalized_terms_ratio(text) # Step 1
         return "" if normalized_terms_ratio.nil?
-        select_sentences(text, max_num_sentences, normalized_terms_ratio).join(" ")
+        select_sentences(text, max_num_sentences).join(" ")
       end
     end
   end

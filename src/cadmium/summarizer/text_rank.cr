@@ -12,6 +12,7 @@ module Cadmium
     # TextRank's paper. The resulting matrix is a stochastic matrix ready for power method.
     # Source: https://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf
     class TextRank < AbstractSummarizer
+      include Apatite
       @damping = 0.85
       @epsilon = 1e-4
 
@@ -31,21 +32,22 @@ module Cadmium
       end
 
       private def create_matrix(text : String) : Matrix
-        sentences_as_significant_terms
-        weights = Matrix.build(number_of_sentences) { 0 }
+        sentences_as_significant_terms = Sentence.sentences(text).map { |sentence| significant_terms(sentence) }
+        number_of_sentences = sentences_as_significant_terms.size
+        weights = Matrix.build(number_of_sentences) { 0.0 }
         sentences_as_significant_terms.each_with_index do |words_i, i|
           sentences_as_significant_terms.each_with_index do |words_j, j|
             weights[i, j] = rate_sentences_edge(words_i, words_j)
           end
         end
 
-        weights /= weights.row_vectors.sum # To be completed
+        weights /= weights.row_vectors.sum(Vector[0.0]).to_matrix # To be fixed ?
 
-        Matrix.build(number_of_sentences) { (1.0 - @damping) / sentences_count } + @damping * weights
+        Matrix.build(number_of_sentences) { (1.0 - @damping) / number_of_sentences } + weights.map { |weight| weight * @damping }
       end
 
       # See if we can assert that sentence_1.size and sentence_2.size > 0
-      private def rate_sentences_edge(sentence_1 : Array(String), sentence_2 : Array(String))
+      private def rate_sentences_edge(sentence_1 : Array(String), sentence_2 : Array(String)) : Float64
         rank = 0
 
         sentence_1.each do |word_1|

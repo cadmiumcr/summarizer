@@ -40,7 +40,7 @@ module Cadmium
         kld
       end
 
-      private def select_sentences(text : String, max_num_sentences : Int, normalized_terms_ratio : Hash(String, Float64)) : Array(String)
+      private def select_sentences(text : String, max_num_sentences : Int) : Array(String)
         final_summary = Hash(String, Float64).new
         all_sentences_significant_terms = Sentence.sentences(text).each_with_object({} of String => Array(String)) { |sentence, significant_terms| significant_terms[sentence] = significant_terms(sentence) } # Step 1
         terms_frequency = normalized_terms_ratio(text)                                                                                                                                                         # Step 2

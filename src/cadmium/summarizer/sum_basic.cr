@@ -39,7 +39,8 @@ module Cadmium
         terms_in_sentence.reject! { |term| !normalized_terms_ratio.includes?(term) }
       end
 
-      private def select_sentences(text : String, max_num_sentences : Int, normalized_terms_ratio : Hash(String, Float64)) : Array(String)
+      private def select_sentences(text : String, max_num_sentences : Int) : Array(String)
+        normalized_terms_ratio = normalized_terms_ratio(text)
         sentences = Cadmium::Util::Sentence.sentences(text)
         selected_sentences = [] of String
         selected_sentence = ""

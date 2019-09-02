@@ -13,5 +13,7 @@ dependencies:
     github: cadmiumcr/tokenizer
   cadmium_stemmer:
     github: cadmiumcr/stemmer
+  apatite:
+    github: watzon/apatite
 
 license: MIT

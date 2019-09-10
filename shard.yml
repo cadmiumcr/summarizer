@@ -15,6 +15,7 @@ dependencies:
     github: cadmiumcr/stemmer
   apatite:
     github: watzon/apatite
+    branch: master
 
   
 development_dependencies:

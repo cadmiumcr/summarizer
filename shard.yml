@@ -16,4 +16,9 @@ dependencies:
   apatite:
     github: watzon/apatite
 
+  
+development_dependencies:
+  ameba:
+    github: veelenga/ameba
+
 license: MIT

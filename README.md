@@ -1,5 +1,7 @@
 # summarizer
 
+![](https://github.com/cadmiumcr/summarizer/workflows/.github/workflows/crystal.yml/badge.svg)
+
 Inspired from [sumy](https://github.com/miso-belica/sumy), summarizer lets you summarize any input text through extraction based algorithms.
 
 As of now, the following algorithms are implemented :

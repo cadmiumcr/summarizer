@@ -9,7 +9,7 @@ module Cadmium
     # Reference : https://ieeexplore.ieee.org/document/5392672?arnumber=5392672
     class Luhn < AbstractSummarizer
       private def all_terms(text : String) : Array(String) # Only for Luhn to calculate term distance in sentence
-        text.tokenize(WordTokenizer)
+        text.tokenize(Tokenizer::Word)
       end
 
       private def window_start(terms_in_sentence : Array(String), normalized_terms : Array(String)) : Int32 | Nil

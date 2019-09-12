@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 0.30.1">
+
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="../../js/doc.js"></script>
+<script type="text/javascript">
+  CrystalDoc.base_path = "../../";
+</script>
+
+  <meta id="repository-name" content="github.com/cadmiumcr/summarizer">
+  <title>Cadmium::Summarizer::Luhn - github.com/cadmiumcr/summarizer</title>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="repository-links">
+      <a href="../../index.html">README</a>
+    </div>
+  </div>
+
+  <div class="search-results" class="hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent open current" data-id="github.com/cadmiumcr/summarizer/Cadmium" data-name="cadmium">
+      <a href="../../Cadmium.html">Cadmium</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/cadmiumcr/summarizer/Cadmium/StringExtension" data-name="cadmium::stringextension">
+      <a href="../../Cadmium/StringExtension.html">StringExtension</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="github.com/cadmiumcr/summarizer/Cadmium/Summarizer" data-name="cadmium::summarizer">
+      <a href="../../Cadmium/Summarizer.html">Summarizer</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/cadmiumcr/summarizer/Cadmium/Summarizer/AbstractSummarizer" data-name="cadmium::summarizer::abstractsummarizer">
+      <a href="../../Cadmium/Summarizer/AbstractSummarizer.html">AbstractSummarizer</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/cadmiumcr/summarizer/Cadmium/Summarizer/KL" data-name="cadmium::summarizer::kl">
+      <a href="../../Cadmium/Summarizer/KL.html">KL</a>
+      
+    </li>
+  
+  <li class=" current" data-id="github.com/cadmiumcr/summarizer/Cadmium/Summarizer/Luhn" data-name="cadmium::summarizer::luhn">
+      <a href="../../Cadmium/Summarizer/Luhn.html">Luhn</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/cadmiumcr/summarizer/Cadmium/Summarizer/SumBasic" data-name="cadmium::summarizer::sumbasic">
+      <a href="../../Cadmium/Summarizer/SumBasic.html">SumBasic</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/cadmiumcr/summarizer/Cadmium/Summarizer/TextRank" data-name="cadmium::summarizer::textrank">
+      <a href="../../Cadmium/Summarizer/TextRank.html">TextRank</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> Cadmium::Summarizer::Luhn
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../Cadmium/Summarizer/Luhn.html">Cadmium::Summarizer::Luhn</a></li><li class="superclass"><a href="../../Cadmium/Summarizer/AbstractSummarizer.html">Cadmium::Summarizer::AbstractSummarizer</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>Overview</h2>
+
+  <p>The Luhn summarizer returns the most significant sentences of a text by :
+1 - Calculating frequencies ratio of significant terms (discounting ones with ratio outside an arbitray range, ie "normalized").
+2 - Calculating each sentence rating ((number of significant terms)² / (greatest distance between two significant terms)).
+3 - Sorting sentences according to their weight and returning the first n of them.
+Reference : https://ieeexplore.ieee.org/document/5392672?arnumber=5392672</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>Defined in:</h2>
+  
+    
+      <a href="https://github.com/cadmiumcr/summarizer/blob/9cefdb398d7a347d7179c95e70225e6f371561ed/src/cadmium/summarizer/luhn.cr#L10" target="_blank">
+        cadmium/summarizer/luhn.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="methods-inherited">
+  
+    
+
+  <h3>Instance methods inherited from class <code><a href="../../Cadmium/Summarizer/AbstractSummarizer.html">Cadmium::Summarizer::AbstractSummarizer</a></code></h3>
+  
+  
+    <a href="../../Cadmium/Summarizer/AbstractSummarizer.html#all_terms(text:String):Array(String)-instance-method" class="tooltip">
+      <span>all_terms(text : String) : Array(String)</span>
+    all_terms</a>, 
+    
+  
+    <a href="../../Cadmium/Summarizer/AbstractSummarizer.html#normalize_ratio(terms_ratio:Hash(String,Float64),min_ratio=0.001,max_ratio=0.5):Hash(String,Float64)-instance-method" class="tooltip">
+      <span>normalize_ratio(terms_ratio : Hash(String, Float64), min_ratio = <span class="n">0.001</span>, max_ratio = <span class="n">0.5</span>) : Hash(String, Float64)</span>
+    normalize_ratio</a>, 
+    
+  
+    <a href="../../Cadmium/Summarizer/AbstractSummarizer.html#normalized_terms_ratio(text:String,min_ratio=0.001,max_ratio=0.5):Hash(String,Float64)-instance-method" class="tooltip">
+      <span>normalized_terms_ratio(text : String, min_ratio = <span class="n">0.001</span>, max_ratio = <span class="n">0.5</span>) : Hash(String, Float64)</span>
+    normalized_terms_ratio</a>, 
+    
+  
+    <a href="../../Cadmium/Summarizer/AbstractSummarizer.html#select_sentences(text:String,max_num_sentences:Int32):Array(String)-instance-method" class="tooltip">
+      <span>select_sentences(text : String, max_num_sentences : Int32) : Array(String)</span>
+    select_sentences</a>, 
+    
+  
+    <a href="../../Cadmium/Summarizer/AbstractSummarizer.html#significant_terms(text:String):Array(String)-instance-method" class="tooltip">
+      <span>significant_terms(text : String) : Array(String)</span>
+    significant_terms</a>, 
+    
+  
+    <a href="../../Cadmium/Summarizer/AbstractSummarizer.html#summarize(text:String,max_num_sentences=5):String-instance-method" class="tooltip">
+      <span>summarize(text : String, max_num_sentences = <span class="n">5</span>) : String</span>
+    summarize</a>, 
+    
+  
+    <a href="../../Cadmium/Summarizer/AbstractSummarizer.html#terms_frequencies(terms:Array(String)):Hash(String,Int32)-instance-method" class="tooltip">
+      <span>terms_frequencies(terms : Array(String)) : Hash(String, Int32)</span>
+    terms_frequencies</a>, 
+    
+  
+    <a href="../../Cadmium/Summarizer/AbstractSummarizer.html#terms_ratio(terms_frequencies:Hash(String,Int32),number_of_terms:Int32):Hash(String,Float64)-instance-method" class="tooltip">
+      <span>terms_ratio(terms_frequencies : Hash(String, Int32), number_of_terms : Int32) : Hash(String, Float64)</span>
+    terms_ratio</a>
+    
+  
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+</body>
+</html>

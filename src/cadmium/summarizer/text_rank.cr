@@ -15,35 +15,35 @@ module Cadmium
       include Apatite
       @damping = 0.85
       @epsilon = 1e-4
+      @delta = 1e-7
+      @number_of_sentences : Int32 = 1
 
-      private def power_method(matrix : Matrix, epsilon = @epsilon)
+      private def power_method(matrix : Matrix(Float64), epsilon = @epsilon) : Vector(Float64)
         transposed_matrix = matrix.transpose
-        sentences_count = matrix.size
-        p_vector = [1.0 / sentences_count] * sentences_count
-        lambda_val = 1.0
-
+        p_vector = Vector.elements([1.0 / @number_of_sentences.to_f] * @number_of_sentences)
+        lambda_val : Float64 = 1.0
         while lambda_val > epsilon
-          next_p = transposed_matrix.dot(p_vector)
-          lambda_val = (next_p - p_vector).norm
-          p_vector = next_p
+          temp_vec = p_vector
+          transposed_matrix.column_vectors.each { |vector| temp_vec *= vector }
+          next_p = temp_vec
+          lambda_val = (next_p - p_vector).norm.not_nil!
+          p_vector = next_p.not_nil!
         end
 
-        p_vector
+        p_vector.map { |element| element.to_f }
       end
 
-      private def create_matrix(text : String) : Matrix
+      private def create_matrix(text : String) : Matrix(Float64)
         sentences_as_significant_terms = Sentence.sentences(text).map { |sentence| significant_terms(sentence) }
-        number_of_sentences = sentences_as_significant_terms.size
-        weights = Matrix.build(number_of_sentences) { 0.0 }
+        @number_of_sentences = sentences_as_significant_terms.size
+        weights = Matrix.build(@number_of_sentences) { 0.0 }
         sentences_as_significant_terms.each_with_index do |words_i, i|
           sentences_as_significant_terms.each_with_index do |words_j, j|
             weights[i, j] = rate_sentences_edge(words_i, words_j)
           end
         end
-
-        weights /= weights.row_vectors.sum(Vector[0.0]).to_matrix # To be fixed ?
-
-        Matrix.build(number_of_sentences) { (1.0 - @damping) / number_of_sentences } + weights.map { |weight| weight * @damping }
+        weights = weights.column_vectors.map { |column| (column + @delta).normalize }
+        Matrix.build(@number_of_sentences) { (1.0 - @damping) / @number_of_sentences } + weights.map { |weight| weight * @damping }
       end
 
       # See if we can assert that sentence_1.size and sentence_2.size > 0
@@ -55,18 +55,19 @@ module Cadmium
             rank = word_1 == word_2 ? rank + 1 : rank
           end
         end
-        return 0.0 if rank = 0
+        return 0.0 if rank == 0
 
         norm = Math.log(sentence_1.size) + Math.log(sentence_2.size)
         return rank * 1.0 if sentence_1.size + sentence_2.size == 2
         rank / norm
       end
 
-      private def select_sentences(text : String, max_num_sentences : Int) : Array(String)
+      private def select_sentences(text : String, max_num_sentences = 5) : Array(String)
+        return [""] unless text.size > 0 && max_num_sentences > 0
         matrix = create_matrix(text)
         ranks = power_method(matrix, @epsilon)
         ranked_sentences = Sentence.sentences(text).zip(ranks).sort_by { |sentence_and_rating| sentence_and_rating[1] }
-        ranked_sentences...max_num_sentences.map { |sentence_and_rating| sentence_and_rating[0] }
+        ranked_sentences[..max_num_sentences - 1].map { |sentence_and_rating| sentence_and_rating[0] }
       end
     end
   end

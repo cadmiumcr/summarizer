@@ -9,6 +9,7 @@ As of now, the following algorithms are implemented :
 - Luhn
 - KL divergence based summarizer (WIP)
 - SumBasic
+- TextRank
 
 More are being worked on.
 

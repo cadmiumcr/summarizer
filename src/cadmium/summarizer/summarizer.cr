@@ -51,9 +51,7 @@ module Cadmium
       end
     end
   end
-end
 
-module Cadmium
   module StringExtension
     def summarize(summarizer = Cadmium::LuhnSummarizer, *args, **kwargs)
       summarizer = summarizer.new(*args, **kwargs)

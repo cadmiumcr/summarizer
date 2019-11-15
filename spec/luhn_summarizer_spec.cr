@@ -25,3 +25,11 @@ describe Cadmium::Summarizer::Luhn do
     hume_text.summarize(Cadmium::Summarizer::Luhn).should eq(summary_length[5])
   end
 end
+
+describe Cadmium::Document do
+  subject = Cadmium::Document.new(hume_text)
+
+  it "should summarize text via Document#summarize" do
+    subject.summarize.should eq(summary_length[5])
+  end
+end

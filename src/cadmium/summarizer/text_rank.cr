@@ -34,7 +34,7 @@ module Cadmium
       end
 
       private def create_matrix(text : String) : Matrix(Float64)
-        sentences_as_significant_terms = Sentence.sentences(text).map { |sentence| significant_terms(sentence) }
+        sentences_as_significant_terms = Document.new(text).sentences.map { |sentence| significant_terms(sentence.verbatim) }
         @number_of_sentences = sentences_as_significant_terms.size
         weights = Matrix.build(@number_of_sentences) { 0.0 }
         sentences_as_significant_terms.each_with_index do |words_i, i|
@@ -66,7 +66,7 @@ module Cadmium
         return [""] unless text.size > 0 && max_num_sentences > 0
         matrix = create_matrix(text)
         ranks = power_method(matrix, @epsilon)
-        ranked_sentences = Sentence.sentences(text).zip(ranks).sort_by { |sentence_and_rating| sentence_and_rating[1] }
+        ranked_sentences = text.tokenize(Tokenizer::Sentence).zip(ranks).sort_by { |sentence_and_rating| sentence_and_rating[1] }
         ranked_sentences[..max_num_sentences - 1].map { |sentence_and_rating| sentence_and_rating[0] }
       end
     end

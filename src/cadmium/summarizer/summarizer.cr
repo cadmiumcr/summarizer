@@ -53,9 +53,27 @@ module Cadmium
   end
 
   module StringExtension
-    def summarize(summarizer = Cadmium::LuhnSummarizer, *args, **kwargs)
+    def summarize(summarizer = Cadmium::Summarizer::Luhn, *args, **kwargs)
       summarizer = summarizer.new(*args, **kwargs)
       summarizer.summarize(self)
+    end
+  end
+
+  module DocumentExtension
+    property summary : String?
+
+    def summarize(summarizer = Cadmium::Summarizer::Luhn, *args, **kwargs)
+      summarizer = summarizer.new(*args, **kwargs)
+      @summary = summarizer.summarize(self.verbatim)
+    end
+  end
+
+  module CorpusExtension
+    property summary : String?
+
+    def summarize(summarizer = Cadmium::Summarizer::Luhn, *args, **kwargs)
+      summarizer = summarizer.new(*args, **kwargs)
+      @summary = summarizer.summarize(self.documents.map { |document| document.verbatim }.join)
     end
   end
 end

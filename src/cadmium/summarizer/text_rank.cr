@@ -37,11 +37,22 @@ module Cadmium
         sentences_as_significant_terms = Document.new(text).sentences.map { |sentence| significant_terms(sentence.verbatim) }
         @number_of_sentences = sentences_as_significant_terms.size
         weights = Matrix.build(@number_of_sentences) { 0.0 }
+
         sentences_as_significant_terms.each_with_index do |words_i, i|
-          sentences_as_significant_terms.each_with_index do |words_j, j|
-            weights[i, j] = rate_sentences_edge(words_i, words_j)
+          sentences_as_significant_terms[i..].each_with_index do |words_j, j|
+            weight = rate_sentences_edge(words_i, words_j)
+            weights[i, j + i] = weight
+            weights[j + i, i] = weight
           end
         end
+
+        #        less efficient algorithm kept for reference purposes
+        # sentences_as_significant_terms.each_with_index do |words_i, i|
+        #   sentences_as_significant_terms.each_with_index do |words_j, j|
+        #     weights[i, j] = rate_sentences_edge(words_i, words_j)
+        #   end
+        # end
+
         weights = weights.column_vectors.map { |column| (column + @delta).normalize }
         Matrix.build(@number_of_sentences) { (1.0 - @damping) / @number_of_sentences } + weights.map { |weight| weight * @damping }
       end
@@ -49,7 +60,7 @@ module Cadmium
       # See if we can assert that sentence_1.size and sentence_2.size > 0
       private def rate_sentences_edge(sentence_1 : Array(String), sentence_2 : Array(String)) : Float64
         rank = 0
-
+        return 0.0 if sentence_1 === sentence_2
         sentence_1.each do |word_1|
           sentence_2.each do |word_2|
             rank = word_1 == word_2 ? rank + 1 : rank

@@ -11,11 +11,10 @@ dependencies:
     github: cadmiumcr/lemmatizer
   cadmium_stemmer:
     github: cadmiumcr/stemmer
-  apatite:
-    github: watzon/apatite
-    branch: master
+  num:
+    github: crystal-data/num.cr
 
-  
+
 development_dependencies:
   ameba:
     github: veelenga/ameba

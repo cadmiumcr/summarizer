@@ -1,4 +1,4 @@
 require "cadmium_lemmatizer"
 require "cadmium_stemmer"
-require "apatite"
+require "num"
 require "./cadmium/summarizer"

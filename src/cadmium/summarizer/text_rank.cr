@@ -12,31 +12,36 @@ module Cadmium
     # TextRank's paper. The resulting matrix is a stochastic matrix ready for power method.
     # Source: https://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf
     class TextRank < AbstractSummarizer
-      include Apatite
       @damping = 0.85
       @epsilon = 1e-4
       @delta = 1e-7
       @number_of_sentences : Int32 = 1
 
-      private def power_method(matrix : Matrix(Float64), epsilon = @epsilon) : Vector(Float64)
+      private def power_method(matrix : Tensor(Float64, CPU(Float64)), epsilon = @epsilon) : Tensor(Float64, CPU(Float64))
+        # For column-stochastic matrix, use M^T * p for power iteration
         transposed_matrix = matrix.transpose
-        p_vector = Vector.elements([1.0 / @number_of_sentences.to_f] * @number_of_sentences)
+        p_vector = [1.0 / @number_of_sentences.to_f] * @number_of_sentences
+        p_vector = p_vector.to_tensor
         lambda_val : Float64 = 1.0
         while lambda_val > epsilon
-          temp_vec = p_vector
-          transposed_matrix.column_vectors.each { |vector| temp_vec *= vector }
-          next_p = temp_vec
-          lambda_val = (next_p - p_vector).norm.not_nil!
-          p_vector = next_p.not_nil!
+          # Power iteration: p = M^T * p (transpose since matrix is column-stochastic)
+          # Reshape p_vector to column vector for matmul
+          p_col = p_vector.reshape([@number_of_sentences, 1])
+          next_p_col = transposed_matrix.matmul(p_col)
+          next_p = next_p_col.reshape([@number_of_sentences])
+          # Calculate L2 norm manually for 1D tensor
+          diff = next_p - p_vector
+          lambda_val = Math.sqrt((diff * diff).sum)
+          p_vector = next_p
         end
 
         p_vector.map { |element| element.to_f }
       end
 
-      private def create_matrix(text : String) : Matrix(Float64)
+      private def create_matrix(text : String) : Tensor(Float64, CPU(Float64))
         sentences_as_significant_terms = Document.new(text).sentences.map { |sentence| significant_terms(sentence.verbatim) }
         @number_of_sentences = sentences_as_significant_terms.size
-        weights = Matrix.build(@number_of_sentences) { 0.0 }
+        weights = Tensor.new([@number_of_sentences, @number_of_sentences]) { 0.0 }
 
         sentences_as_significant_terms.each_with_index do |words_i, i|
           sentences_as_significant_terms[i..].each_with_index do |words_j, j|
@@ -53,8 +58,22 @@ module Cadmium
         #   end
         # end
 
-        weights = weights.column_vectors.map { |column| (column + @delta).normalize }
-        Matrix.build(@number_of_sentences) { (1.0 - @damping) / @number_of_sentences } + weights.map { |weight| weight * @damping }
+        # Normalize columns and apply damping
+        normalized_cols = Tensor.new([@number_of_sentences, @number_of_sentences]) { 0.0 }
+        weights.shape[1].times do |i|
+          col = weights[..., i]
+          # For PageRank, normalize by column sum (not L2 norm) to get stochastic matrix
+          col_sum = col.sum
+          if col_sum > 0.0
+            col_norm = col / col_sum
+          else
+            # Keep column as-is if sum is zero (all zeros)
+            col_norm = col
+          end
+          normalized_cols[..., i] = col_norm
+        end
+        damping_matrix = Tensor.new([@number_of_sentences, @number_of_sentences]) { (1.0 - @damping) / @number_of_sentences }
+        damping_matrix + normalized_cols * @damping
       end
 
       # See if we can assert that sentence_1.size and sentence_2.size > 0
@@ -77,8 +96,11 @@ module Cadmium
         return [""] unless text.size > 0 && max_num_sentences > 0
         matrix = create_matrix(text)
         ranks = power_method(matrix, @epsilon)
-        ranked_sentences = text.tokenize(Tokenizer::Sentence).zip(ranks).sort_by { |sentence_and_rating| sentence_and_rating[1] }
-        ranked_sentences[..max_num_sentences - 1].map { |sentence_and_rating| sentence_and_rating[0] }
+        ranks_array = ranks.to_a
+        sentences = text.tokenize(Tokenizer::Sentence)
+        ranked = sentences.zip(ranks_array).sort_by { |sentence_and_rating| -sentence_and_rating[1] }
+        # Select top sentences and sort by original position
+        ranked[..max_num_sentences - 1].sort_by { |sentence_and_rating| sentences.index(sentence_and_rating[0]) || 0 }.map { |sentence_and_rating| sentence_and_rating[0] }
       end
     end
   end

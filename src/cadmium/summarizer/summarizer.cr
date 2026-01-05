@@ -39,7 +39,7 @@ module Cadmium
       end
 
       def normalize_ratio(terms_ratio : Hash(String, Float64), min_ratio = 0.001, max_ratio = 0.5) : Hash(String, Float64) # Should we make min_ratio and max_ratio configurable by the user ?
-        terms_ratio.delete_if { |_, ratio| !(min_ratio..max_ratio).includes?(ratio) }
+        terms_ratio.select { |_, ratio| (min_ratio..max_ratio).includes?(ratio) }
       end
 
       # This summarize method should be common to all extraction-based summarizers as they all build a summary out of extracted and rated sentences
